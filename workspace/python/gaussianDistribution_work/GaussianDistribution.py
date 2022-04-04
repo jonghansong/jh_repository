@@ -15,7 +15,8 @@ import yaml
 @click.command()
 @click.option('--total', help='total_number_of_people')
 @click.option('--group', help='number_of_people_in_a_group')
-def run(total, group):
+@click.option('--file', default="out.yml", help='temp yaml file name')
+def run(total, group, file):
     vTotal = int(total)
     vGroup = int(group)
 
@@ -26,14 +27,19 @@ def run(total, group):
     out = {}
     runRandomSelect(vTotal, vGroup, out)
 
-    with open('out.yaml', 'w') as f:
+    with open(file, 'w') as f:
         yaml.dump(out, f)
 
-    
+    drawGraph(file)
 
+def drawGraph(file_name) :
+    with open(file_name) as f:
+        context = yaml.load(f, Loader=yaml.FullLoader)
 
 def runRandomSelect(total, group, out) :
-    repeat_cnt = total / group if total % group == 0 else total / group + 1
+    share = total % group
+    #repeat_cnt = total / group if share == 0 else total / group + 1
+    repeat_cnt = total / group
 
     for i in range(int(repeat_cnt)) :
         nSelectZero = 0
@@ -48,6 +54,21 @@ def runRandomSelect(total, group, out) :
         rZero = nSelectZero / group
         rOne = 1 - rZero
         out[i] = {0:rZero, 1:rOne}
+
+    nSelectZero = 0
+    nSelectOne = 0
+    for i in range(share) :
+        v = random.randrange(0,2)
+        assert(v == 0 or v == 1)
+        if(v == 0) :
+            nSelectZero = nSelectZero + 1
+        else :
+            nSelectOne = nSelectOne + 1
+    rZero = nSelectZero / group
+    rOne = 1 - rZero
+    print(out.keys()[-1])
+
+
 
 
 def printError(msg) :
