@@ -1,23 +1,44 @@
-#!/bin/sh
+#!/bin/bash
 
-# remove venv directory
-if [ -e venv ]; then
-    rm -rf venv
-fi
+until [ -z $1 ] 
+do
+    echo "\$1 is $1"
+    # remove venv directory
+    if [ $1 == "--init" ] || [ $1 == "-i" ]; then
+        if [ -e venv ]; then
+            rm -rf venv
+        fi
+    fi
+
+    shift 1
+done
 
 # create virtual environment
-python3 -m venv venv
+if [ ! -e venv ]; then
+    python3 -m venv venv
 
-# activate virtual environment
-act_bin=`find ./venv -name "activate"`
-echo $act_bin
-source ${act_bin}
-if [ $? -ne 1 ]; then
-    echo "activate is fail."
-    #exit 1
+    act_bin=`find ./venv -name "activate"`
+
+    # activate virtual environment
+    echo ${act_bin}
+    source ${act_bin}
+    if [ $? -ne 0 ]; then
+        echo "activate is failed."
+        exit 1
+    fi
+    
+    # install packages
+    pip install click
+    pip install pyyaml
+else
+    act_bin=`find ./venv -name "activate"`
+    echo ${act_bin}
+    source ${act_bin}
+    if [ $? -ne 0 ]; then
+        echo "activate is failed."
+        exit 1
+    fi
 fi
 
-# install packages
-pip install click
-
 # run program
+python GaussianDistribution.py --total 10000000 --group 1000
