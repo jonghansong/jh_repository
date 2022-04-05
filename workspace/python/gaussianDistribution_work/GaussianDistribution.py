@@ -3,14 +3,7 @@ import click
 import random
 import yaml
 
-# get arguments for total number of people and number of people in a group.
-# generate expected vote result for yaml.
-# import yaml
 # draw plot.
-
-#@click.group()
-#def run():
-#    pass
 
 @click.command()
 @click.option('--total', help='total_number_of_people')
@@ -36,9 +29,9 @@ def drawGraph(file_name) :
     with open(file_name) as f:
         context = yaml.load(f, Loader=yaml.FullLoader)
 
+    print(context)
+
 def runRandomSelect(total, group, out) :
-    share = total % group
-    #repeat_cnt = total / group if share == 0 else total / group + 1
     repeat_cnt = total / group
 
     for i in range(int(repeat_cnt)) :
@@ -55,21 +48,23 @@ def runRandomSelect(total, group, out) :
         rOne = 1 - rZero
         out[i] = {0:rZero, 1:rOne}
 
-    nSelectZero = 0
-    nSelectOne = 0
-    for i in range(share) :
-        v = random.randrange(0,2)
-        assert(v == 0 or v == 1)
-        if(v == 0) :
-            nSelectZero = nSelectZero + 1
-        else :
-            nSelectOne = nSelectOne + 1
-    rZero = nSelectZero / group
-    rOne = 1 - rZero
-    print(out.keys()[-1])
+    share = total % group
+    if(share != 0) :
+        nSelectZero = 0
+        nSelectOne = 0
+        for i in range(share) :
+            v = random.randrange(0,2)
+            assert(v == 0 or v == 1)
+            if(v == 0) :
+                nSelectZero = nSelectZero + 1
+            else :
+                nSelectOne = nSelectOne + 1
+        rZero = nSelectZero / group
+        rOne = 1 - rZero
 
-
-
+        keys = out.keys()
+        last = list(keys)[-1]
+        out[last+1] = {0:rZero, 1:rOne}
 
 def printError(msg) :
     print("[Error] : {}".format(msg))

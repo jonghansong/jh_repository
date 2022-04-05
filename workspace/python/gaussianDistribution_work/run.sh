@@ -41,4 +41,4 @@ else
 fi
 
 # run program
-python GaussianDistribution.py --total 10000000 --group 1000
+python GaussianDistribution.py --total 19237405 --group 1000
