@@ -8,7 +8,7 @@ import yaml
 @click.command()
 @click.option('--total', help='total_number_of_people')
 @click.option('--group', help='number_of_people_in_a_group')
-@click.option('--file', default="out.yml", help='temp yaml file name')
+@click.option('--file', default="out.yaml", help='temp yaml file name')
 def run(total, group, file):
     vTotal = int(total)
     vGroup = int(group)
@@ -29,7 +29,17 @@ def drawGraph(file_name) :
     with open(file_name) as f:
         context = yaml.load(f, Loader=yaml.FullLoader)
 
-    print(context)
+    classified_r = {}
+    for k0, v0 in context.items() :
+        if(type(v0) is not dict) : continue
+
+        for k1, v1 in v0.items() :
+            if(not k1 in classified_r.keys()) :
+                classified_r[k1] = []
+                classified_r[k1].append(v1)
+            else :
+                classified_r[k1].append(v1)
+
 
 def runRandomSelect(total, group, out) :
     repeat_cnt = total / group
