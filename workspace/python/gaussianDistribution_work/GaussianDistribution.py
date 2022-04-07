@@ -2,6 +2,8 @@ import sys
 import click
 import random
 import yaml
+#import numpy as np
+import matplotlib.pyplot as plt
 
 # draw plot.
 
@@ -29,16 +31,43 @@ def drawGraph(file_name) :
     with open(file_name) as f:
         context = yaml.load(f, Loader=yaml.FullLoader)
 
-    classified_r = {}
+    dZeroR = {}
+    dOneR = {}
+
+    zero_list_x = []
+    zero_list_y = []
+
+    one_list_x = []
+    one_list_y = []
+
     for k0, v0 in context.items() :
         if(type(v0) is not dict) : continue
 
         for k1, v1 in v0.items() :
-            if(not k1 in classified_r.keys()) :
-                classified_r[k1] = []
-                classified_r[k1].append(v1)
-            else :
-                classified_r[k1].append(v1)
+            if(k1 == 0) :
+                if(not v1 in dZeroR) :
+                    dZeroR[v1] = 0
+                dZeroR[v1] = dZeroR[v1] + 1
+                zero_list_x.append(v1)
+                zero_list_y.append(dZeroR[v1])
+            elif(k1 == 1) :
+                if(not v1 in dOneR) :
+                    dOneR[v1] = 0
+                dOneR[v1] = dOneR[v1] + 1
+                one_list_x.append(v1)
+                one_list_y.append(dOneR[v1])
+
+    sortedDZeroR = sorted(dZeroR.items(), key = lambda item: item[1], reverse = True)
+    sortedDOneR = sorted(dOneR.items(), key = lambda item: item[1], reverse = True)
+
+    maximum = sortedDZeroR[0][1] if sortedDZeroR[0][1] > sortedDOneR[0][1] else sortedDOneR[0][1]
+
+    plt.plot(zero_list_x, zero_list_y, 'ro')
+    plt.plot(one_list_x, one_list_y, 'bo')
+    plt.axis([0, 1, 0, maximum+10])
+    plt.show()
+
+
 
 
 def runRandomSelect(total, group, out) :
@@ -55,7 +84,8 @@ def runRandomSelect(total, group, out) :
             else :
                 nSelectOne = nSelectOne + 1
         rZero = nSelectZero / group
-        rOne = 1 - rZero
+        rOne = nSelectOne / group
+        #rOne = 1 - rZero
         out[i] = {0:rZero, 1:rOne}
 
     share = total % group

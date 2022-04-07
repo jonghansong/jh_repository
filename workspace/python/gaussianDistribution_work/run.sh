@@ -30,6 +30,7 @@ if [ ! -e venv ]; then
     # install packages
     pip install click
     pip install pyyaml
+    pip install matplotlib
 else
     act_bin=`find ./venv -name "activate"`
     echo ${act_bin}
